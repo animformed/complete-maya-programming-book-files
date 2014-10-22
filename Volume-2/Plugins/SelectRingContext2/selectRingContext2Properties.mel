@@ -1,0 +1,42 @@
+//
+// Copyright (C) 2004 David Gould 
+// www.davidgould.com
+//
+
+global proc selectRingContext2Properties()
+{	
+	if( !`control -exists selectRing2` )
+	{
+		setUITemplate -pushTemplate OptionsTemplate;
+
+		string $parent = `toolPropertyWindow -query -location`;
+		setParent $parent;
+
+		columnLayout selectRing2;
+			frameLayout -collapsable true -collapse false
+				-l "Select Ring Settings" selectRing2Frame;
+				columnLayout selectRing2Options;
+				$parent = `setParent -query`;
+				
+					separator -style "none";
+
+					checkBoxGrp -ncb 3 
+						-l "Components:" 
+						-l1 "Vertices"
+						-l2 "Edges"
+						-l3 "Faces" 
+						selectRing2Components;
+
+    				radioButtonGrp -nrb 2
+       					-l "Type:"
+       		 			-l1 "Ring"
+		        		-l2 "Loop"
+						selectRing2Type;
+					
+				setParent ..;
+			setParent ..;
+		setParent ..;
+	
+		setUITemplate -popTemplate;
+	}
+}

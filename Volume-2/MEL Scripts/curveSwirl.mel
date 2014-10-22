@@ -1,0 +1,63 @@
+//
+// Copyright (C) 2004 David Gould 
+//
+	
+global proc curveSwirl(
+	float $radius,
+	int $nSpans,
+	int $nRevolutions,
+	int $degree
+)
+{
+	int $nCVs = $degree + $nSpans;
+	int $multiplicity = $degree; // Ensures that the curve begins and ends at first and last cvs
+
+	// Generate the control vertices
+	vector $cvs[];
+	float $azimIncr = deg_to_rad( $nRevolutions * float(360) / ($nCVs-1) );
+	float $zenIncr = deg_to_rad( float(180) / ($nCVs-1));
+	float $azimuth, $zenith, $sinZenith;
+	float $x, $y, $z;
+	int $cvi;
+	for( $i=0, $cvi=0, $azimuth=0.0, $zenith=0.0; 
+		 $cvi < $nCVs; 
+		 $cvi++, $azimuth+=$azimIncr, $zenith+=$zenIncr )
+	{
+		$sinZenith = sin( $zenith );
+		
+		$x = $radius * $sinZenith * cos($azimuth);
+		$y = $radius * cos($zenith);
+		$z = $radius * $sinZenith * sin($azimuth);
+		
+		$cvs[$i++] = << $x, $y, $z >>;
+	}
+
+	// Generate the knot vector
+	int $span, $m;
+	float $knots[];
+	for( $i=0, $span=0, $i=0; $span <= $nSpans; $span++ )
+	{
+		$knots[$i++] = float($span);
+		
+		// First or last knot
+		if( $span == 0 || $span == $nSpans )
+		{
+			// m is initialized to 1 since one knot has already been appended
+			// above, that leaves multiplicity-1 knots to be appended
+			for( $m=1; $m < $multiplicity; $m++ )
+				$knots[$i++] = float($span);
+		}
+	}
+		
+	string $cmd = "curve -degree " + $degree;
+	vector $p;
+	for( $i=0; $i < size($cvs); $i++ )
+	{
+		$p = $cvs[$i]; 
+		$cmd += " -p " + ($p.x) + " " + ($p.y) + " " + ($p.z);
+	}
+	for( $i=0; $i < size($knots); $i++ )
+		$cmd += " -k " + $knots[$i];
+	
+	evalEcho( $cmd );	
+}

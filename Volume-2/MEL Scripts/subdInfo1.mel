@@ -1,0 +1,193 @@
+//
+// Copyright (C) 2004 David Gould 
+//
+
+global proc subdInfo1( string $filter )
+{
+	int $filterAll = true, 
+		$filterCreased = false, 
+		$filterEdits = false;
+	switch( $filter)
+	{
+		case "all":
+			break;
+		
+		case "creasesOnly":
+			$filterCreased = true;
+			$filterAll = $filterEdits = false;
+			break;
+			
+		case "editsOnly":
+			$filterEdits = true;
+			$filterAll = $filterCreases = false;
+			break;
+			
+		default:
+			warning ("Unknown filter specified: " + $filter);
+			return;
+			break;
+	}
+	 	
+	string $subdShape;
+	string $rels[];
+	string $selection[] = `ls -selection -long`;
+	for( $sel in $selection )
+	{
+		$subdShape = "";
+		$rels = `listRelatives $sel`;
+		if( size($rels) && `objectType -isType "subdiv" $rels[0]` )
+			$subdShape = $rels[0];
+		else
+		{
+			if( `objectType -isType "subdiv" $sel` )
+			$subdShape = $sel;      
+		}
+		  
+		if( $subdShape == "" )
+			continue;
+		    
+		print ($sel + "\n");
+		int $nLevels = `subdiv -query -deepestLevel $subdShape` + 1;
+		int $maxLevels = `subdiv -query -maxPossibleLevel $subdShape`;
+		
+		print ("Levels: " + $nLevels + " Max Levels: " + $maxLevels + "\n");
+		
+		int $level;
+		for( $level=0; $level < $nLevels; $level++ )
+		{
+			print ("Level: " + $level + "\n");
+			
+			if( $filterEdits )
+			{
+				querySubdiv -action 1 -level $level -relative off $subdShape;
+				string $vertsCompact[] = `ls -selection`;
+				print("  Edited Vertices:\n" );
+				for( $vertCompact in $vertsCompact )
+					print("    " + $vertCompact + "\n");
+				continue;
+			}
+			
+			if( $filterCreased )
+			{
+				querySubdiv -action 2 -level $level -relative off $subdShape;
+				string $vertsCompact[] = `ls -selection`;
+				if( size($vertsCompact) )
+				{
+					print("  Creased Vertices:\n" );
+					for( $vertCompact in $vertsCompact )
+						print("    " + $vertCompact + "\n");
+				}
+				
+				querySubdiv -action 3 -level $level -relative off $subdShape;
+				string $edgesCompact[] = `ls -selection`;
+				if( size($edgesCompact) )
+				{
+					print("  Creased Edges:\n" );
+					for( $edgeCompact in $edgesCompact )
+						print("    " + $edgeCompact + "\n");
+				}
+				
+				continue;
+			}
+			
+			querySubdiv -action 4 -level $level -relative off $subdShape;
+			string $faces[] = `ls -selection -flatten`;
+			print ("  Polygons: " + size($faces) + "\n");
+			
+			int $f;
+			for( $f=0; $f < size($faces); $f++ )
+			{
+				print ("  Polygon #" + $f + "\n");
+				
+				string $vertsCompact[] = `subdListComponentConversion -fromFace -toVertex $faces[$f]`;
+				string $verts[] = `ls -flatten $vertsCompact`;
+				
+				string $uvsCompact[] = `subdListComponentConversion -fromFace -toUV $faces[$f]`;
+				string $uvs[] = `ls -flatten $uvsCompact`;				
+
+				print("    Vertices: " + size($verts) + "\n");
+									
+				int $v;
+				float $pos[3];
+				float $uv[2];
+				for( $v=0; $v < size($verts); $v++ )
+				{
+					// N.B. To get the object space coordinates used this below
+					// $pos = `getAttr $verts[$v]`;
+					
+					$pos = `pointPosition -w $verts[$v]`;
+					$uv = `getAttr $uvs[$v]`;
+					
+					string $edgesCompact[] = `subdListComponentConversion -fromVertex -toEdge $verts[$v]`;
+					string $edges[] = `ls -flatten $edgesCompact`;
+					
+					print ("      Vertex #" + $v + "\n");
+					print ("        Position: (" + $pos[0] + ", " + $pos[1] + ", " + $pos[2] + ")\n");
+					print ("        UV: (" + $uv[0] + ", " + $uv[1] + ")\n");
+					print ("        Valence: " + size($edges) + "\n");					
+				}
+			}
+		}
+	}
+	
+	// Restore the original selection
+	select -r $selection;
+}
+
+/*
+// |subd
+Levels: 2 Max Levels: 13
+Level 0
+  Polygons: 6
+  Polygon #0
+  Shader: initialShadingGroup
+  Creased Edges:
+  Vertices: 4
+    Vertex #0
+      Position: (-0.5, -0.5, 0.5)
+      Normal: (-1.599976, -1.599976, 1.599976)
+      UV: (0, 0)
+      Valence: 3
+    Vertex #1
+      Position: (0.5, -0.5, 0.5)
+      Normal: (1.599976, -1.599976, 1.599976)
+      UV: (1, 0)
+      Valence: 3
+    Vertex #2
+      Position: (0.5, 0.5, 0.5)
+      Normal: (1.599976, 1.599976, 1.599976)
+      UV: (1, 1)
+      Valence: 3
+    Vertex #3
+      Position: (-0.5, 0.5, 0.5)
+      Normal: (-1.599976, 1.599976, 1.599976)
+      UV: (0, 1)
+      Valence: 3
+  Polygon #1
+  Creased Edges:
+  Vertices: 4
+    Vertex #0
+      Position: (-0.5, -0.5, 0.5)
+      Normal: (-1.599976, -1.599976, 1.599976)
+      UV: (0, 0)
+      Valence: 3
+    Vertex #1
+      Position: (0.5, -0.5, 0.5)
+      Normal: (1.599976, -1.599976, 1.599976)
+      UV: (1, 0)
+      Valence: 3
+    Vertex #2
+      Position: (0.5, 0.5, 0.5)
+      Normal: (1.599976, 1.599976, 1.599976)
+      UV: (1, 1)
+      Valence: 3
+    Vertex #3
+      Position: (-0.5, 0.5, 0.5)
+      Normal: (-1.599976, 1.599976, 1.599976)
+      UV: (0, 1)
+      Valence: 3
+    Vertex #4
+      Position: (-0.5, 0.5, 0.5)
+      Normal: (-1.599976, 1.599976, 1.599976)
+      UV: (0, 1)
+ */

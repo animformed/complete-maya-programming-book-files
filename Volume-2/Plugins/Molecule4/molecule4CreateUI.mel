@@ -1,0 +1,55 @@
+//
+// Copyright (C) 2004 David Gould 
+// 
+
+global proc molecule4CreateUI()
+{	
+	global string $gMainPolygonsMenu;
+	
+	if (`menu -exists $gMainPolygonsMenu`)
+	{		
+		// Force creation of Polygons menu
+		string $postMenuCmd = `menu -query -postMenuCommand $gMainPolygonsMenu`;
+		catch( eval( $postMenuCmd ) );
+
+		setParent -menu $gMainPolygonsMenu;
+		menuItem -divider true molecule4DividerItem;
+		menuItem -label "Molecule4" 
+				 -command "molecule4MenuItemCallback 0"
+				 -annotation "Molecule: Create ball-rod model"
+				 molecule4Item;
+		menuItem -optionBox true
+				 -command "molecule4MenuItemCallback 1";
+	}
+	else
+		error "molecule4: Unable to get the \"Polygons\" menu";
+}
+
+global proc molecule4SetupOptions( int $reset )
+{
+	if( $reset || !`optionVar -exists "molecule4Radius"` )
+		optionVar -floatValue "molecule4Radius" 0.1;
+	if( $reset || !`optionVar -exists "molecule4Segments"` )
+		optionVar -intValue "molecule4Segments" 6;
+	if( $reset || !`optionVar -exists "molecule4BallRatio"` )
+		optionVar -floatValue "molecule4BallRatio" 2.0;
+}
+
+global proc molecule4MenuItemCallback( int $showOptions )
+{
+	molecule4SetupOptions(0);	
+	if( $showOptions )
+		molecule4Window();
+	else
+		molecule4Execute();
+}
+
+global proc molecule4Execute()
+{
+	// Retrieve the option variables
+	float $rad = `optionVar -q "molecule4Radius"`;
+	int $segs = `optionVar -q "molecule4Segments"`;
+	float $br = `optionVar -q "molecule4BallRatio"`;
+	
+	evalEcho( "molecule4 -radius " + $rad + " -segments " + $segs + " -ballRatio " + $br );
+}

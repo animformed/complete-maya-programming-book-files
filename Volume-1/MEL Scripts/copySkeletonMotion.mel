@@ -1,0 +1,71 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc copySkeletonMotion( string $srcRootNode, string $destRootNode )
+{
+float $srcPos[] = `xform -query -worldSpace -translation $srcRootNode`;
+float $destPos[] = `xform -query -worldSpace -translation $destRootNode`;
+
+string $srcNodes[] = `listRelatives -fullPath 
+                      -children -allDescendents $srcRootNode`;
+$srcNodes[ size($srcNodes) ] = $srcRootNode;
+ 
+string $destNodes[] = `listRelatives -fullPath 
+     -children -allDescendents $destRootNode`;
+$destNodes[ size($destNodes) ] = $destRootNode;
+
+if( size($srcNodes) != size($destNodes) )
+  {
+  error "Source skeleton and destination skeleton are structurely different";
+  return;
+  }
+
+string $attrs[] = { "translateX", "translateY", "translateZ", 
+  "scaleX", "scaleY", "scaleZ",
+  "rotateX", "rotateY", "rotateZ" };
+
+int $i;
+for( $i=0; $i < size($srcNodes); $i++ )
+   {
+   for( $attr in $attrs )
+      {
+	string $inPlugs[] = `listConnections -plugs yes 
+			-source yes -destination no 
+			($srcNodes[$i] + "." + $attr)`;
+	if( size($inPlugs) )
+	   {
+	   string $tokens[];
+         tokenize $inPlugs[0] "." $tokens;
+         string $inNode = $tokens[0];
+         string $inAttr = $tokens[1];
+
+         string $dupInNodes[] = `duplicate -upstreamNodes $inNode`;         
+         connectAttr -force 
+                     ($dupInNodes[0] + "." + $inAttr)
+                     ($destNodes[$i] + "." + $attr);
+	   }
+      else
+	   {
+	   $res = `getAttr ($srcNodes[$i] + "." + $attr)`;
+	   setAttr ($destNodes[$i] + "." + $attr) $res; 
+	   }
+      }
+   }
+
+string $moveRoot;
+string $parentNodes[] = `listRelatives -parent $destRootNode`;
+string $found = `match "_moveSkeleton" $parentNodes[0]`;
+if( size($found) )
+   $moveRoot = $parentNodes[0];
+else
+   $moveRoot = `group -name "_moveSkeleton" -world $destRootNode`;
+  
+move -worldSpace 
+     ($destPos[0] - $srcPos[0]) 
+     ($destPos[1] - $srcPos[1]) 
+     ($destPos[2] - $srcPos[0]) $moveRoot;
+}

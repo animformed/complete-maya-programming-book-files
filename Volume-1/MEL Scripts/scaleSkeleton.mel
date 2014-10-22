@@ -1,0 +1,20 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc scaleSkeleton( string $rootNode, float $scale )
+{
+string $childs[] = `listRelatives -fullPath -children 
+                    -type joint -allDescendents $rootNode`;
+for( $child in $childs )
+  {
+  float $pos[] = `joint -query -relative -position $child`;
+  $pos[0] *= $scale;
+  $pos[1] *= $scale;
+  $pos[2] *= $scale;
+  joint -edit -relative -position $pos[0] $pos[1] $pos[2] $child;
+  }
+}

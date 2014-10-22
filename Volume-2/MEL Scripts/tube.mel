@@ -1,0 +1,186 @@
+//
+// Copyright (C) 2004 David Gould 
+//
+	
+proc string createPart( 
+	int $part,
+	float $innerRadius,
+	float $outerRadius,
+	float $height,
+	int $circumSpans,
+	int $heightSpans,
+	int $degree )
+{
+	int $uSpans, $vSpans;
+	float $angleDir;
+	float $radius = $outerRadius;
+	float $innerRad = $innerRadius;
+	float $elevation;
+
+	switch( $part )
+	{
+		case 0: // Inner side
+			$uSpans = $circumSpans;
+			$vSpans = $heightSpans;
+			$angleDir = 1.0;
+			$radius = $innerRadius;			
+			break;
+		
+		case 1: // Outer side
+			$uSpans = $circumSpans;
+			$vSpans = $heightSpans;
+			$angleDir = -1.0;
+			break;
+			
+		case 2: // Top cap
+			$uSpans = $circumSpans;
+			$vSpans = 1;
+			$angleDir = -1.0;
+			$elevation = $height;
+			break;
+			
+		case 3: // Bottom cap
+			$uSpans = $circumSpans;
+			$vSpans = 1;
+			$angleDir = 1.0;
+			$elevation = 0.0;
+			break;
+	}
+	
+	int $nCVsU = $degree + $uSpans;
+	int $nCVsV = $degree + $vSpans;
+	
+	// Setup control vertices
+	// 
+	vector $cvs[];
+	float $x, $y, $z;
+	float $angleIncr = deg_to_rad( $angleDir * float(360) / $nCVsU );
+	float $vStart, $vIncr;
+	if( $part == 0 || $part == 1 )
+	{
+		$vStart = 0.0;
+		$vIncr = $height / ($nCVsV-1);
+	}
+	else
+	{
+		$vStart = $radius;
+		$vIncr = ($innerRad - $radius) / ($nCVsV-1);
+	}
+	float $angle, $v;
+	int $i, $j, $cvi=0;
+	for( $i=0, $angle=0.0; $i < $nCVsU; $i++, $angle+=$angleIncr )
+	{
+		for( $j=0, $v=$vStart; $j < $nCVsV; $j++, $v+=$vIncr )
+		{
+			if( $part == 0 || $part == 1 ) // Sides
+			{
+				$x = $radius * cos( $angle );
+				$z = $radius * sin( $angle );
+				$y = $v;
+			}
+			else // Cap
+			{
+				$x = $v * cos( $angle );
+				$z = $v * sin( $angle );
+				$y = $elevation;
+			}
+		
+			$cvs[$cvi++] = << $x, $y, $z >>;
+		}
+	}
+	
+	// Duplicate the "degree" number of columns of initial control vertices
+	int $nDuplicates = $degree * $nCVsV;
+	for( $i=0; $i < $nDuplicates; $i++ )
+		$cvs[$cvi++] = $cvs[$i];
+
+	// Setup u knot vector
+	//
+	float $knotsU[];
+	int $nCVsAlongU = $nCVsU + $degree;
+	int $nSpans = $nCVsAlongU - $degree;
+	int $nKnots = $nSpans + 2 * $degree - 1;
+	int $ki;
+	for( $ki=0, $i=-($degree-1); $ki < $nKnots; $ki++, $i++ )
+		$knotsU[$ki] = $i;
+	
+	// Setup v knot vector
+	//
+	int $multiplicity = $degree;
+	float $knotsV[];
+	int $span, $m;
+	for( $span=0, $i=0; $span <= $vSpans; $span++ )
+	{
+		$knotsV[$i++] = float($span);
+		
+		// First or last knot
+		if( $span == 0 || $span == $vSpans )
+		{
+			// m is initialized to 1 since one knot has already been appended
+			// above, that leaves multiplicity-1 knots to be appended
+			for( $m=1; $m < $multiplicity; $m++ )
+				$knotsV[$i++] = float($span);
+		}
+	}
+	
+	// Create the surface
+	// 
+	string $cmd = "surface";
+	$cmd += " -degreeU " + $degree + " -degreeV " + $degree;
+	$cmd += " -formU \"periodic\" -formV \"open\"";
+	vector $p;
+	for( $i=0; $i < size($cvs); $i++ )
+	{
+		$p = $cvs[$i];
+		$cmd += " -p " + ($p.x) + " " + ($p.y) + " " + ($p.z);
+	}
+	for( $i=0; $i < size($knotsU); $i++ )
+		$cmd += " -ku " + $knotsU[$i];
+	for( $i=0; $i < size($knotsV); $i++ )
+		$cmd += " -kv " + $knotsV[$i];
+
+	string $shapeObj = eval( $cmd );
+	string $relatives[] = eval( "listRelatives -parent " + $shapeObj );
+	string $transformObj = $relatives[0];
+	
+	// Put surface into the initial shading group
+	$cmd = "sets -e -fe initialShadingGroup " + $transformObj; 
+	eval( $cmd );
+	
+	return $transformObj;
+}
+
+global proc tube(
+	float $innerRadius,
+	float $outerRadius,
+	float $height,
+	int $circumSpans,
+	int $heightSpans,
+	int $degree
+)
+{
+	// Create tube transform
+	string $tubeTransform = eval( "createNode \"transform\" -n \"tube\"" );
+
+	string $parts[];
+	int $i;
+	for( $i=0; $i < 4; $i++ )
+	{
+		$part = createPart( $i, $innerRadius, $outerRadius, $height, $circumSpans, $heightSpans, $degree );
+			
+		// Parent the part to tube transform
+		eval( "parent " + $part + " " + $tubeTransform );
+	}
+	
+	// Select tube transform
+	eval( "select -r " + $tubeTransform );
+}
+	
+/*
+string $exampleScripts = "D:\\DavidGould.com\\Writing\\Morgan Kaufmann\\Complete Maya Programming II\\Edition #1\\Drafts\\MEL Scripts";
+string $newScriptPath=$exampleScripts + ";" +`getenv "MAYA_SCRIPT_PATH"`;
+putenv "MAYA_SCRIPT_PATH" $newScriptPath;
+
+source tube.mel
+tube( 0.5, 1.0, 3.0, 6, 2, 3 );
+*/

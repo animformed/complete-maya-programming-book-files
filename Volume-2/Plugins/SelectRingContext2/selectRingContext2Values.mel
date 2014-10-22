@@ -1,0 +1,37 @@
+//
+// Copyright (C) 2004 David Gould 
+// www.davidgould.com
+//
+
+global proc selectRingContext2Values( string $ctxName ) 
+{
+	string $icon = "selectRingContext2.xpm";
+	string $helpTag = "Select Ring";
+	toolPropertySetCommon $ctxName $icon $helpTag;
+
+	string $parent = (`toolPropertyWindow -q -location` + "|selectRing2");
+	setParent $parent;
+	
+	int $selVerts = `selectRingContext2 -q -selectVertices $ctxName`;
+	int $selEdges = `selectRingContext2 -q -selectEdges $ctxName`;
+	int $selFaces = `selectRingContext2 -q -selectFaces $ctxName`;
+	
+	checkBoxGrp -e
+		-v1 $selVerts
+		-cc1 ("selectRingContext2 -e -selectVertices #1 " + $ctxName)
+		-v2 $selEdges
+		-cc2 ("selectRingContext2 -e -selectEdges #1 " + $ctxName)
+		-v3 $selFaces
+		-cc3 ("selectRingContext2 -e -selectFaces #1 " + $ctxName)		
+		selectRing2Components;
+
+	int $selType = `selectRingContext2 -q -selectType $ctxName`;
+	
+    radioButtonGrp -e
+       	-on1 ("selectRingContext2 -e -selectType 0 " + $ctxName)
+       	-on2 ("selectRingContext2 -e -selectType 1 " + $ctxName)
+     	-select (!$selType ? 1 : 2)
+     	selectRing2Type;
+	
+	toolPropertySelect selectRing2;
+}

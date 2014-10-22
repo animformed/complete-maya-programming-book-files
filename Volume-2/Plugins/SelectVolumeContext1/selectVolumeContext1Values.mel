@@ -1,0 +1,16 @@
+//
+// Copyright (C) 2004 David Gould 
+// www.davidgould.com
+//
+
+global proc selectVolumeContext1Values( string $ctxName ) 
+{
+	string $icon = "selectVolumeContext1.xpm";
+	string $helpTag = "Select Volume";
+	toolPropertySetCommon $ctxName $icon $helpTag;
+
+	string $parent = (`toolPropertyWindow -q -location` + "|selectVolume1");
+	setParent $parent;
+		
+	toolPropertySelect selectVolume1;
+}

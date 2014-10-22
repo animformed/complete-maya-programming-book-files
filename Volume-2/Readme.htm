@@ -1,0 +1,180 @@
+<html>
+<head>
+<title>Main</title>
+<meta name="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="file:///D|/DavidGould.com/Writing/MayaProgramming%20Book/Complete%20Maya%20Programming/DavidGouldStyles.css">
+<link rel="stylesheet" href="file:///D|/DavidGould.com/Writing/MayaProgramming%20Book/Complete%20Maya%20Programming/DavidGouldStyles.css" type="text/css">
+<link rel="stylesheet" href="Html/DavidGouldStyles.css" type="text/css">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#3399FF" vlink="#3399FF" alink="#00FFCC">
+<h1><b><i><font color="#FFA600">Complete Maya Programming (Volume II)</font> </i>Companion 
+  Files</b></h1>
+<p><a href="Readme.htm#FilesDescription">Files Description</a> | <a href="Readme.htm#Windows">Building 
+  Plugins under Windows</a> | <a href="Readme.htm#Linux">Building Plugins under 
+  Linux</a> | <a href="http://www.davidgould.com" target="_blank">Book Website</a></p>
+<p>&nbsp;</p>
+<h1><b><a name="FilesDescription"></a>Files Description</b></h1>
+<hr noshade>
+<p>The companion files include all the source code for the plugin and MEL examples. 
+  The subdirectories are as follows:</p>
+<table width="50%" border="1" bordercolor="#666666" cellspacing="0" cellpadding="6">
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p><b>Directory</b></p>
+    </td>
+    <td width="85%"> 
+      <p><b>Contents</b></p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p>\Plugins</p>
+    </td>
+    <td width="85%"> 
+      <p>The source code (.cpp, .h), Microsoft Visual C++ .NET project files (.vcproj), 
+        Linux makefiles (Makefile) for all the example plugins</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p>\Scenes</p>
+    </td>
+    <td width="85%"> 
+      <p>All the example Maya scenes (.ma)</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p>\MEL Scripts</p>
+    </td>
+    <td width="85%"> 
+      <p>All the MEL scripts (.mel)</p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h1><a name="Windows"></a>Building Plugins under Windows</h1>
+<h2></h2>
+<hr noshade>
+<h2>Minimum Requirements</h2>
+<blockquote>
+  <p>In order to create Maya plugins the following are needed</p>
+</blockquote>
+<ul>
+  <li>&nbsp;Alias Maya 5.0 or later</li>
+  <li>&nbsp;Alias Maya Developer's Toolkit (<span class="SourceCode">\devkit</span> 
+    subdirectory under Maya<i>x.x</i> directory)</li>
+  <li>&nbsp;Microsoft Visual C++ .NET 2002/Version 7.0</li>
+</ul>
+<p>&nbsp;</p>
+<h2>Compiling Example Plugins</h2>
+<blockquote><ol>
+    <li>Go to the subdirectory of the plugin you want to compile, e.g. <span class="SourceCode">\Plugins\CurveInfo1</span></li>
+    <li>Double-click on the project workspace file, e.g. <span class="SourceCode">CurveInfo1.vcproj</span><br>
+      <br>
+      Visual C++ will load the project and show the plugin source code files.<br>
+      <br>
+    </li>
+    <li>Select <b>Project | Properties</b> from the main menu.</li>
+    <li>In the <b>Configuration Properties</b> list click on the <b>C/C++</b> 
+      item.</li>
+    <li>Click on the <b>General</b> item.</li>
+    <li>The <b>Additional Include Directories</b> setting contains a list of directories 
+      containing header files (.h), e.g.<br>
+      <br>
+      <span class="SourceCode">.;&quot;D:\Program Files\Alias\Maya5.0\include\&quot;</span><br>
+      <br>
+      Add the Maya include directory to the end of the list. Be sure to enclose 
+      it in quotes (&quot;) and use a semicolon (;) to separate it from the last 
+      directory. For example, if your Maya includes files are located in the directory 
+      <span class="SourceCode">C:\Alias\Maya\Include</span> then it would be added 
+      to the list as follows<br>
+      <br>
+      <span class="SourceCode">.;&quot;D:\Program Files\Alias\Maya5.0\include\&quot;;&quot;C:\Alias\Maya\Include&quot;<br>
+      <br>
+      </span></li>
+    <li>In the <b>Configuration Properties</b> list click on the <b>Linker</b> 
+      item.</li>
+    <li>Click on the <b>Genera</b>l item.</li>
+    <li>The <b>Additional Library Directories</b> setting contains a list of directories 
+      containing library files (.lib), e.g. <br>
+      <br>
+      <span class="SourceCode">&quot;D:\Program Files\Alias\Maya5.0\lib&quot;<br>
+      </span><br>
+      Add the Maya library directory to the list. Be sure to enclose it in quotes 
+      (&quot;) and use a semicolon (;) to separate it from the last directory. 
+      For example, if your Maya library files are located in the directory <span class="SourceCode">C:\Alias\Maya\lib</span> 
+      then it would be added to the list as follows<br>
+      <br>
+      <span class="SourceCode">&quot;D:\Program Files\Alias\Maya5.0\lib&quot;;&quot;C:\Alias\Maya\lib&quot;</span><br>
+      <br>
+    </li>
+    <li>Click on the <b>OK</b> button.<br>
+      <br>
+      The project settings are updated.<br>
+      <br>
+    </li>
+    <li>Select <b>Build | Build Solution</b> from the main menu.<br>
+      <br>
+      The plugin will be compiled.</li>
+  </ol>
+</blockquote>
+<p>&nbsp;</p>
+<h1><a name="Linux"></a>Building Plugins under Linux</h1>
+<h2></h2>
+<hr noshade>
+<h2>Minimum Requirements</h2>
+<blockquote> 
+  <p>In order to create Maya plugins the following are needed</p>
+</blockquote>
+<ul>
+  <li>&nbsp;Alias Maya 5.0 or later</li>
+  <li>&nbsp;Alias Maya Developer's Toolkit (<span class="SourceCode">/devkit</span> 
+    subdirectory under <span class="SourceCode">maya<i>x.x</i></span> directory)</li>
+  <li>&nbsp;gcc compiler 3.2.2 (Maya is built with this compiler under RedHat 
+    7.3. Plug-ins built with any other compiler will not work because the C++ 
+    ABI (Application Binary Interface) must match between Maya and plug-ins.)</li>
+</ul>
+<p>&nbsp;</p>
+<h2>Compiling Example Plugins</h2>
+<blockquote>
+<p>Compiling the example plugins under Linux is done using makefiles.</p>
+  <ol>
+    <li>Open a terminal/shell.<br>
+      <br>
+      In order to compile the plugins, the makefiles need to know where your installation 
+      of Maya is located. The environment variable <b class="SourceCode">$MAYA_LOCATION</b> 
+      is typically set to the Maya directory.<br>
+      <br>
+    </li>
+    <li>To see if this environment variable is set correctly, execute the following:<br>
+      <br>
+      <b><span class="SourceCode">~&gt; echo $MAYA_LOCATION</span></b><br>
+      <br>
+      The Maya directory should be displayed. If it isn't you need to set the 
+      environment variable <b class="SourceCode">$MAYA_LOCATION</b> to the Maya 
+      directory.<br>
+      <br>
+    </li>
+    <li>Go to the directory where the companion files were unzipped to.</li>
+    <li>Go to the <b>Plugins</b> subdirectory.<br>
+      <br>
+      The <b>Plugins</b> directory contains a makefile that will compile and link 
+      all the example plugins.<br>
+      <br>
+    </li>
+    <li>Execute the following:<br>
+      <br>
+      <b> <span class="SourceCode">~&gt; make</span></b><br>
+      <br>
+      All the plugins will then be compiled. If you want to compile the plugins 
+      individually simply go the subdirectory containing the particular plugin 
+      and then execute <b class="SourceCode">make</b>. This will make the plugin 
+      in the current directory.</li>
+  </ol>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+</html>
+

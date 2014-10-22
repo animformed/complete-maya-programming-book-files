@@ -1,0 +1,32 @@
+//
+// Copyright (C) 2004 David Gould 
+// www.davidgould.com
+//
+
+global proc selectVolumeContext1Properties()
+{	
+	if( !`control -exists selectVolume1` )
+	{
+		setUITemplate -pushTemplate OptionsTemplate;
+
+		string $parent = `toolPropertyWindow -query -location`;
+		setParent $parent;
+
+		columnLayout selectVolume1;
+			frameLayout -collapsable true -collapse false
+				-l "Select Volume Settings" selectVolume1Frame;
+				columnLayout selectVolume1Options;
+				$parent = `setParent -query`;
+				
+					separator -style "none";
+
+					text -align "center"
+						-label "No options";
+										
+				setParent ..;
+			setParent ..;
+		setParent ..;
+	
+		setUITemplate -popTemplate;
+	}
+}

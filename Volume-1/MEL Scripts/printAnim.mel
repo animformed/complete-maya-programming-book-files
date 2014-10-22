@@ -1,0 +1,47 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc printAnim( int $detailed )
+{
+print "\nAnimation...";
+string $animNodes[];
+float $keytimes[];
+string $sel[] = `ls -selection`;
+for( $node in $sel )
+   {
+   print ("\nNode: " + $node); 
+   $animNodes = `keyframe -query -name $node`;
+   for( $ac in $animNodes )
+      {
+      print ("\nAnimCurve: " + $ac );
+      $keytimes = `keyframe -query -timeChange $ac`;
+      print ("\n" + size($keytimes) + " keys: " );
+      for( $keyt in $keytimes )
+         {
+         $keyv = `keyframe -time $keyt -query -valueChange $ac`;
+         if( $detailed )
+           {
+           float $isBd[] = `keyframe -time $keyt -query -breakdown $ac`;
+           print ("\n" + ($isBd[0] ? "Breakdown" : "Normal") + " Key:" );
+           }
+
+         print (" [" + $keyt + ", " + $keyv[0] + "]");
+         
+         if( $detailed )
+           {
+           print ("\nTangent: ");
+           $keyinT = `keyTangent -time $keyt -query -inTangentType $ac`;
+           $keyoutT = `keyTangent -time $keyt -query -outTangentType $ac`;
+           $keyinA = `keyTangent -time $keyt -query -inAngle $ac`;
+           $keyoutA = `keyTangent -time $keyt -query -outAngle $ac`;
+           print ("("+ $keyinT[0] + " angle=" + $keyinA[0] + 
+                  ", " + $keyoutT[0] + " angle=" + $keyoutA[0] + ")");
+           }
+         }
+      }
+   }  
+}

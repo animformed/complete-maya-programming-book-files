@@ -1,0 +1,372 @@
+<html>
+<head>
+<title>Main</title>
+<meta name="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="file:///D|/DavidGould.com/Writing/MayaProgramming%20Book/Complete%20Maya%20Programming/DavidGouldStyles.css">
+<link rel="stylesheet" href="file:///D|/DavidGould.com/Writing/MayaProgramming%20Book/Complete%20Maya%20Programming/DavidGouldStyles.css" type="text/css">
+<link rel="stylesheet" href="DavidGouldStyles.css" type="text/css">
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#3399FF" vlink="#3399FF" alink="#00FFCC">
+<h1><b><i>Complete Maya Programming</i> Companion Files</b></h1>
+<p>The companion files include all the source code for the plugin and MEL examples. 
+  The subdirectories are as follows:</p>
+<table width="50%" border="1" bordercolor="#666666" cellspacing="0" cellpadding="6">
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p><b>Directory</b></p>
+    </td>
+    <td width="85%"> 
+      <p><b>Contents</b></p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p>\Plugins</p>
+    </td>
+    <td width="85%"> 
+      <p>The source code (.cpp, .h) and Microsoft Visual C++ project files (.dsw) 
+        for all the example plugins</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p>\Scenes</p>
+    </td>
+    <td width="85%"> 
+      <p>All the example Maya scenes (.ma)</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="15%" valign="top"> 
+      <p>\MEL Scripts</p>
+    </td>
+    <td width="85%"> 
+      <p>All the MEL scripts(.mel)</p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr noshade>
+<h1><a name="CompilingPlugins"></a>Compiling Example Plugins</h1>
+<p><a href="#CompileWindows">Windows</a> | <a href="#CompilingUnderLinux">Linux</a></p>
+<p>Follow the instructions below to compile the example plugins.</p>
+<h2><a name="CompileWindows"></a>Windows</h2>
+<blockquote> 
+  <p>Minimum Requirements:</p>
+</blockquote>
+<ul>
+  <li>&nbsp;Alias | Wavefront Maya 4.0 or 4.5</li>
+  <li>&nbsp;Alias | Wavefront Maya Developer's Toolkit (\devkit subdirectory under 
+    Maya<i>X.X</i> directory)</li>
+  <li>&nbsp;Microsoft Visual C++ 6.0</li>
+</ul>
+<blockquote>
+  <p>Once you have setup the minimum requirements above you can compile and run 
+    the example plugins.</p>
+  <ol>
+    <li>Go to the subdirectory of the plugin you want to compile, e.g. \Plugins\BasicLocator</li>
+    <li>Double-click on the project workspace file. This is the file with the 
+      .dsw extension, e.g. BasicLocator.dsw<br>
+      <br>
+      Visual C++ will load the project and show the plugin source code files.<br>
+      <br>
+    </li>
+    <li>To build (compile and link) the plugin press <b>F7</b> or select <b>Build 
+      | Build <i>pluginname</i>.mll</b> from the main menu.<br>
+      <br>
+      It is most likely the plugin won't compile. A list of compiler errors will 
+      be displayed in the output window. These will include:<br>
+      <br>
+      ... Cannot open include file: '<i>filename</i>.h': No such file or directory 
+      <br>
+      <br>
+      This means that Visual C++ can't find one or more Maya include (.h) files.<br>
+      <br>
+    </li>
+    <li>Press <b>Alt+F7</b> or select <b>Project | Settings...</b> from the main 
+      menu.</li>
+    <li>Click on the <b>C++</b> tab.</li>
+    <li>Click on the combo-box next to <b>Category:</b><br>
+    </li>
+    <li>Select <b>Preprocessor</b> from the drop-down list.<br>
+      <br>
+      The <b>Additional include directories:</b> box will contain a list of directories, 
+      e.g:<br>
+      <br>
+      .,D:\Program Files\AW\Maya4.0\include <br>
+      <br>
+      The directory where the Maya include files (.h) are stored on your computer 
+      needs to be added to this list.<br>
+      <br>
+    </li>
+    <li>Add the Maya include directory to the end of the list. Be sure to use 
+      a comma (,) to separate it. <br>
+      <br>
+      For example, if your Maya includes files are located in the directory C:\AliasWavefront\Maya\Include 
+      then it would be added to the list as follows:<br>
+      <br>
+      .,D:\Program Files\AW\Maya4.0\include,C:\AliasWavefront\Maya\Include<br>
+      <br>
+      Notice the comma separating it from the last directory.<br>
+      <br>
+    </li>
+    <li>Click on the <b>OK</b> button to close the <b>Project Settings</b> dialog 
+      box.</li>
+    <li>Press <b>F7</b> or select <b>Build | Build <i>pluginname</i>.mll</b> from 
+      the main menu.<br>
+      <br>
+      If the directory was added correctly the plugin should now compile. However 
+      it will most likely fail during the linking. An error message, like as follows 
+      will be displayed:<br>
+      <br>
+      ...<br>
+      Linking...<br>
+      LINK : fatal error LNK1104: cannot open file &quot;<i>filename</i>.lib&quot;<br>
+      Error executing link.exe.<br>
+      <br>
+      Like the include files (.h) the directory where the library files (.lib) 
+      are located must be given.<br>
+      <br>
+    </li>
+    <li>Press <b>Alt+F7</b> or select <b>Project | Settings...</b> from the main 
+      menu.</li>
+    <li>Click on the <b>Link</b> tab.</li>
+    <li>Click on the combo-box next to <b>Category:</b></li>
+    <li>Select <b>Input</b> from the drop-down list.<br>
+      <br>
+      The Additional library path: box will contain a list of directories. For 
+      example:<br>
+      <br>
+      D:\Program Files\AW\Maya4.0\lib<br>
+      <br>
+      The directory where the Maya libraries (.lib) are stored needs to be added 
+      to this list.<br>
+      <br>
+    </li>
+    <li>Add the Maya libraries directory to the list. As before, use a comma is 
+      used to separate the directories.<br>
+      <br>
+      For example, if your Maya library files are located in the directory C:\AliasWavefront\Maya\lib 
+      then it would be added to the list as follows:<br>
+      <br>
+      D:\Program Files\AW\Maya4.0\lib,C:\AliasWavefront\Maya\lib<br>
+      <br>
+    </li>
+    <li>Click on the <b>OK</b> button to close the <b>Project Settings</b> dialog 
+      box.</li>
+    <li>Press <b>F7</b> or select <b>Build | Build <i>pluginname</i>.mll</b> from 
+      the main menu.<br>
+      <br>
+      If the library directory was added correctly the plugin should now compile 
+      and link. The resulting plugin file (.mll) will be stored in the Debug subdirectory. 
+      This is the file that is loaded into Maya.<br>
+    </li>
+  </ol>
+</blockquote>
+<h2><a name="CompilingUnderLinux"></a>Linux</h2>
+<blockquote> 
+  <p>Compiling the example plugins under Linux is done using makefiles.</p>
+  <ol>
+    <li>Open a terminal/shell.<br>
+      <br>
+      In order to compile the plugins, the makefiles need to know where your installation 
+      of Maya is located. The environment variable <b>$MAYA_LOCATION</b> is typically 
+      set to the Maya directory.<br>
+      <br>
+    </li>
+    <li>To see if this environment variable is set correctly, execute the following:<br>
+      <br>
+      <b>echo $MAYA_LOCATION</b><br>
+      <br>
+      The Maya directory should be displayed. If it isn't you need to set the 
+      environment variable <b>$MAYA_LOCATION</b> to the Maya directory.<br>
+      <br>
+    </li>
+    <li>Go to the directory where the companion files were unzipped to.</li>
+    <li>Go to the <b>Plugins</b> subdirectory.<br>
+      <br>
+      The <b>Plugins</b> directory contains a makefile that will compile and link 
+      all the example plugins.<br>
+      <br>
+    </li>
+    <li>Execute the following:<br>
+      <br>
+      <b> make</b><br>
+      <br>
+      All the plugins will then be compiled. If you want to compile the plugins 
+      individually simply go the subdirectory containing the particular plugin 
+      and then execute <b>make</b>. This will make the plugin in the current directory.<br>
+    </li>
+  </ol>
+</blockquote>
+<p>&nbsp;</p><hr noshade>
+<h1><a name="CreatingPlugins"></a>Creating New Plugins</h1>
+<p><a href="#WindowsCreate">Windows</a> | <a href="#LinuxCreate">Linux</a></p>
+<h2><a name="WindowsCreate"></a>Windows</h2>
+<blockquote> 
+  <p>Minimum Requirements:</p>
+</blockquote>
+<ul>
+  <li>&nbsp;Alias | Wavefront Maya 4.0 or 4.5</li>
+  <li>&nbsp;Alias | Wavefront Maya Developer's Toolkit (\devkit subdirectory under 
+    Maya<i>X.X</i> directory)</li>
+  <li>&nbsp;Microsoft Visual C++ 6.0</li>
+</ul>
+<blockquote> 
+  <p></p>
+  <p>There are two ways to setup a plugin using Visual C++, the first uses the 
+    Wizard and the second is by doing it manually. The preferred method is the 
+    Wizard since it setups up the necessary project settings automatically.</p>
+  <h3>Wizard</h3>
+  <ol>
+    <li>Run Visual C++.</li>
+    <li>Select <b>File | New...</b> from the main menu.</li>
+    <li>Select <b>Maya Plug-in Wizard</b> from the list of possible projects.<br>
+      <br>
+      If you don't see <b>Maya Plug-in Wizard</b> listed then it may not have 
+      been installed. Rerun the Maya installation and ensure that the Developer's 
+      Toolkit is selected to install. The Maya setup program will automatically 
+      find the copy of Visual C++ and install the Maya wizard. Once this is done 
+      start these instructions again.<br>
+      <br>
+    </li>
+    <li>In the <b>Project name:</b> field type in the name of your plugin, e.g. 
+      MyPlugin.</li>
+    <li>In the <b>Location: </b>field type in the name of the directory where 
+      the plugin files will go. Alternatively use the brower button to select 
+      an existing directory.</li>
+    <li>Click on the <b>OK</b> button.<br>
+      <br>
+      The Maya Plug-in Wizard will the start. The Step 1 of 3 page will be displayed.<br>
+      <br>
+    </li>
+    <li>In the <b>Please enter ... is for:</b> select which version of Maya you'd 
+      like to create a plugin for.</li>
+    <li>In the <b>Location of developer kit</b> select <b>use installed copy</b>.<br>
+      <br>
+      If you get the error message &quot;Can't find an installed copy of Maya 
+      <i>x.x</i>&quot; then select <b>custom location</b>. The custom location 
+      is the main Maya directory and <b>NOT</b> the devkit directory. For instance, 
+      if you copy of Maya is installed in the directory C:\AW\Maya4.0 then this 
+      is the directory to put in the custom location field.<br>
+      <br>
+    </li>
+    <li>In the <b>What is the vendor ...? </b>field type in your name or the name 
+      of your company.</li>
+    <li>Click on the <b>Next</b> button.<br>
+      <br>
+      The Step 2 of 3 page will be displayed.<br>
+      <br>
+    </li>
+    <li>In the <b>What type of plug-in ... create? </b>section select the type 
+      of plugin you'd like to create.</li>
+    <li>In the <b>Maya type name</b> field enter the name of the command, node, 
+      etc.</li>
+    <li>Click on the <b>Next</b> button.<br>
+      <br>
+      The Step 3 of 3 page will be displayed.<br>
+      <br>
+    </li>
+    <li>If you like you can change the plug-in filename in the <b>Name of plug-in:</b> 
+      field.</li>
+    <li>The <b>What libraries...link with?</b> section lists those libraries that 
+      the plugin will link with. The wizard will automatically select the libraries 
+      that your plugin needs. You can select others if you think you'll need them. 
+      Don't worry if you didn't select them all now. You can edit the project 
+      later to include them.</li>
+    <li>Click on the <b>Finish</b> button.<br>
+      <br>
+      The <b>New Project Information</b> dialog box is displayed with a list of 
+      the selected wizard options.<br>
+      <br>
+    </li>
+    <li>Click on the <b>OK</b> button.<br>
+      <br>
+      The project and source code files will be created.<br>
+      <br>
+    </li>
+    <li>Press <b>F7</b> to build the plugin.<br>
+      <br>
+      The final plugin file (.mll) will be created in the Debug subdirectory.<br>
+      <br>
+    </li>
+    <li>To edit the source code files click on the <b>FileView</b> tab at the 
+      bottom left.</li>
+    <li>To show the list of files in the project expand the <b><i>pluginname</i> 
+      files</b> item, e.g. MyPlugin files.</li>
+    <li>Expand the <b>Source Files</b> folder.</li>
+    <li>Double click on the .cpp file listed.<br>
+      <br>
+      You can now edit this file to change your plugin.</li>
+  </ol>
+  <p>At any time during the wizard it is possible to skip any remaining steps 
+    by clicking on the <b>Finish</b> button. This will use the default values 
+    for all the remaining steps.</p>
+</blockquote>
+<h2><a name="LinuxCreate"></a>Linux</h2>
+<blockquote> 
+  <p>The sole setup for creating plugins under Linux is the creation of a makefile. 
+    Having created the makefile the plugin can be compiled by using the make command.</p>
+  <ol>
+    <li>Open a terminal/shell.</li>
+    <li>In order to compile the plugins, the makefiles need to know where your 
+      installation of Maya is located. The environment variable <b>$MAYA_LOCATION</b> 
+      is typically set to the Maya directory.<br>
+    </li>
+    <li>To see if this environment variable is set correctly, execute the following:<br>
+      <br>
+      <b>echo $MAYA_LOCATION</b><br>
+      <br>
+      The Maya directory should be displayed. If it isn't you need to set the 
+      environment variable <b>$MAYA_LOCATION</b> to the Maya directory.<br>
+      <br>
+    </li>
+    <li>Go to the directory where the companion files were unzipped to.</li>
+    <li>Go to the <b>Plugins/BasicLocator</b> subdirectory.<br>
+      <br>
+      All the subdirectories under the <b>Plugins</b> directory contain a makefile 
+      that compile and link the particular plugin. It is easiest to take an existing 
+      makefile and edit it for your purposes.<br>
+      <br>
+    </li>
+    <li>Copy the <b>Makefile</b> file to the directory where your source code 
+      is located.</li>
+    <li>Open the <b>Makefile</b> in a text editor.</li>
+    <li>Go to the line:<br>
+      <br>
+      <b>OBJECTS = BasicLocator.o PluginMain.o</b><br>
+      <br>
+      This is a list of all the object files (.o) that make up the plugin. These 
+      object files are compiled from the source code files (.cpp). Simply change 
+      the line to include all your source code files (.cpp) but with the .o extension. 
+      For example, given the souce code files main.cpp and foo.cpp, change this 
+      line to:<br>
+      <br>
+      <b>OBJECTS = main.o foo.o</b><br>
+      <br>
+    </li>
+    <li>Go to the line:<br>
+      <br>
+      <b>BasicLocator.so: $(OBJECTS)</b><br>
+      <br>
+      Change this to the name of the plugin. For example:<br>
+      <br>
+      <b>foo.so: $(OBJECTS)</b><br>
+      <br>
+    </li>
+    <li>Save the file. Ensure that it is named <b>Makefile</b>. The make command 
+      will automatically look for a file named Makefile.</li>
+    <li>From the shell execute the following:<br>
+      <br>
+      <b> make</b><br>
+      <br>
+      The plugin will be compiled. There will be a .o file for each of the source 
+      code files as well as the final .so file. The .so file is the final plugin 
+      and the one that is loaded in Maya using the Plug-in Manager.</li>
+  </ol>
+</blockquote>
+<blockquote>&nbsp;</blockquote>
+</body>
+</html>
+

@@ -1,0 +1,65 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc float[] transformPoint( float $pt[], float $mtx[] )
+{
+float $res[] = { 0.0, 0.0, 0.0 };
+
+if( size($pt) != 3 && size($mtx) != 16 )
+  {
+  warning "transformPoint proc: pt must have three elements and matrix must have 16 elements";
+  return $res;
+  }
+
+$res[0] = $pt[0] * $mtx[0] + $pt[1] * $mtx[4] + 
+          $pt[2] * $mtx[8] + $mtx[12];
+$res[1] = $pt[0] * $mtx[1] + $pt[1] * $mtx[5] + 
+          $pt[2] * $mtx[9] + $mtx[13];
+$res[2] = $pt[0] * $mtx[2] + $pt[1] * $mtx[6] + 
+          $pt[2] * $mtx[10] + $mtx[14];
+return $res;
+}
+
+proc int getInstanceIndex( string $nodePath )
+{
+string $paths[] = `ls -allPaths $nodePath`;
+int $i;
+for( $i=0; $i < size($paths); $i++ )
+  {
+  if( $paths[$i] == $nodePath )
+    return $i;
+  }
+return -1;
+}
+
+proc float[] spaceToSpace( float $pt[], 
+   string $fromSpace, string $fromNode,
+   string $toSpace, string $toNode )
+{
+float $res[] = $pt;
+float $mtx[];
+
+// Convert pt to world space
+if( $fromSpace == "local" )
+   {
+   $mtx = `xform -query -worldSpace -matrix $fromNode`;
+   $res = transformPoint( $res, $mtx );
+   }
+
+// Convert pt to destination space
+if( $toSpace == "local" )
+   {
+   int $inst = getInstanceIndex( $toNode ); 
+   string $attr = $toNode + ".worldInverseMatrix[" + $inst + "]";
+   $mtx = `getAttr $attr`;
+   print "\nInverse: ";
+   print $mtx;
+   $res = transformPoint( $res, $mtx );   
+   }
+
+return $res;
+}

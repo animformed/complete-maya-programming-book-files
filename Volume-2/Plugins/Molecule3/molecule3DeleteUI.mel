@@ -1,0 +1,14 @@
+//
+// Copyright (C) 2004 David Gould 
+// 
+
+global proc molecule3DeleteUI()
+{
+	global string $gMainPolygonsMenu;
+	
+	if (`menu -exists $gMainPolygonsMenu`)
+	{
+		deleteUI -menuItem molecule3DividerItem;
+		deleteUI -menuItem molecule3Item;
+	}
+}

@@ -1,0 +1,51 @@
+//
+// Copyright (C) 2004 David Gould 
+// 
+
+global proc molecule3CreateUI()
+{	
+	global string $gMainPolygonsMenu;
+	
+	if (`menu -exists $gMainPolygonsMenu`)
+	{
+		setParent -menu $gMainPolygonsMenu;
+		menuItem -divider true molecule3DividerItem;
+		menuItem -label "Molecule3" 
+				 -command "molecule3MenuItemCallback 0"
+				 -annotation "Molecule: Create ball-rod model"
+				 molecule3Item;
+		menuItem -optionBox true
+				 -command "molecule3MenuItemCallback 1";
+	}
+	else
+		error "molecule3: Unable to get the \"Polygons\" menu";
+}
+
+global proc molecule3SetupOptions( int $reset )
+{
+	if( $reset || !`optionVar -exists "molecule3Radius"` )
+		optionVar -floatValue "molecule3Radius" 0.1;
+	if( $reset || !`optionVar -exists "molecule3Segments"` )
+		optionVar -intValue "molecule3Segments" 6;
+	if( $reset || !`optionVar -exists "molecule3BallRatio"` )
+		optionVar -floatValue "molecule3BallRatio" 2.0;
+}
+
+global proc molecule3MenuItemCallback( int $showOptions )
+{
+	molecule3SetupOptions(0);	
+	if( $showOptions )
+		molecule3Window();
+	else
+		molecule3Execute();
+}
+
+global proc molecule3Execute()
+{
+	// Retrieve the option variables
+	float $rad = `optionVar -q "molecule3Radius"`;
+	int $segs = `optionVar -q "molecule3Segments"`;
+	float $br = `optionVar -q "molecule3BallRatio"`;
+	
+	evalEcho( "molecule3 -radius " + $rad + " -segments " + $segs + " -ballRatio " + $br );
+}

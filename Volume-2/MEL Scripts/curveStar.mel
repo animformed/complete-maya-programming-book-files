@@ -1,0 +1,61 @@
+//
+// Copyright (C) 2004 David Gould 
+//
+	
+global proc curveStar(
+	float $innerRadius,
+	float $outerRadius,
+	int $spikes,
+	int $degree,
+	int $periodic
+)
+{
+	// Generate the control vertices
+	vector $cvs[];
+
+	int $nSpikeCVs = 2 * $spikes;
+	float $angleIncr = deg_to_rad(180) / $spikes;
+	float $angle;
+	float $x, $y, $z, $r;
+	int $ci;
+	for( $ci=0, $angle=0.0; $ci < $nSpikeCVs; $ci++, $angle+=$angleIncr )
+	{
+		if( $ci % 2 ) // Odd
+			$r = $outerRadius;
+		else
+			$r = $innerRadius;
+
+		$x = $r * cos($angle);
+		$y = 0.0;
+		$z = $r * sin($angle);
+		
+		$cvs[$ci] = << $x, $y, $z >>;
+	}
+	
+	// Duplicate the "degree" number of initial control vertices
+	for( $ci=0; $ci < $degree; $ci++ )
+		$cvs[size($cvs)] = $cvs[$ci];
+
+	// Generate knots
+	float $knots[];
+	
+	int $nSpans = size($cvs) - $degree;
+	int $nKnots = $nSpans + 2 * $degree - 1;
+	int $ki;
+	for( $i=-($degree-1), $ki=0; $ki < $nKnots; $i++, $ki++ )
+		$knots[$ki] = float($i);
+	
+	// Generate the curve command
+	string $cmd = "curve -degree " + $degree +
+				  " -periodic " + $periodic;
+	vector $p;
+	for( $i=0; $i < size($cvs); $i++ )
+	{
+		$p = $cvs[$i]; 
+		$cmd += " -p " + ($p.x) + " " + ($p.y) + " " + ($p.z);
+	}
+	for( $i=0; $i < size($knots); $i++ )
+		$cmd += " -k " + $knots[$i];
+	
+	evalEcho( $cmd );
+}

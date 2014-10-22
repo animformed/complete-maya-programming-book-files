@@ -1,0 +1,64 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc printTangentPostions( string $animCurve, int $absolute )
+{
+print ("\nTangent Positions...");
+
+float $ktimes[], $kvalues[];
+if( $absolute )
+  {
+  $ktimes = `keyframe -query -timeChange $animCurve`;
+  $kvalues = `keyframe -query -valueChange $animCurve`;
+  }
+
+float $xcomps[], $ycomps[], $weights[];
+int $i, $j;
+for( $i=0; $i < 2; $i++ )
+   {
+   string $xreq, $yreq, $wreq;      
+   if( $i == 0 )
+        {
+        $xreq = "-ix";
+        $yreq = "-iy";
+        $wreq = "-inWeight";
+        }
+      else
+        {
+        $xreq = "-ox";
+        $yreq = "-oy";
+        $wreq = "-outWeight";
+        }
+
+    $xcomps = `keyTangent -query $xreq $animCurve`;
+    $ycomps = `keyTangent -query $xreq $animCurve`;
+    $weights = `keyTangent -query $wreq $animCurve`;
+
+    print ("\n");
+    for( $j=0; $j < size($xcomps); $j = $j + 1 )
+       {
+       $xcomps[$j] *= $weights[$j];
+       $ycomps[$j] *= $weights[$j];
+       if( $absolute ) 
+         {
+         $xcomps[$j] += $ktimes[$j];
+         $ycomps[$j] += $kvalues[$j];
+         }
+
+       print (" [" + $xcomps[$j] + ", " + $ycomps[$j] + "]");
+       }
+   }
+}
+
+
+proc testProc()
+{
+string $animCurves[] = `keyframe -query -name ball.translateX`;
+printTangentPostions( $animCurves[0], true );
+}
+
+testProc();

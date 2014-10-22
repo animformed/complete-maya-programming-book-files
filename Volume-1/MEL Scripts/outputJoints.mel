@@ -1,0 +1,68 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc writeArray( int $fileHnd, float $array[] )
+{
+float $v;
+for( $v in $array )
+    fwrite $fileHnd $v;
+}
+
+proc outputJoints( string $rootNode, string $filename, 
+                   float $startFrame, float $endFrame, 
+                   int $outputWS )
+{
+int $fileHnd = `fopen $filename w`;
+if( $fileHnd == 0 )
+  {
+  error ("Unable to open output file " + $filename + " for writing");
+  return;
+  }
+
+string $childNodes[] = `listRelatives -fullPath 
+                        -type joint -children -allDescendents $rootNode`;
+string $rn[] = { $rootNode };
+string $nodes[] = stringArrayCatenate( $rn, $childNodes );
+
+float $cTime = `currentTime -query`;
+
+string $spaceFlag = ($outputWS) ? "-worldSpace" : "-objectSpace";
+
+print "\nOutputting joints...";
+float $t;
+for( $t = $startFrame; $t <= $endFrame; $t++ )
+    {
+    currentTime -update false $t;
+    fwrite $fileHnd $t;
+    print ("\nFrame: " + $t);
+
+    for( $node in $nodes )
+       {
+	 fwrite $fileHnd $node;
+	 print ("\n  Joint: " + $node );
+
+	 float $pos[] = `xform $spaceFlag -query -translation $node`;
+	 float $rot[] =  `xform $spaceFlag -query -rotation $node`;
+       float $scl[] =  `xform $spaceFlag -query -relative -scale $node`;
+
+	 writeArray( $fileHnd, $pos );
+	 writeArray( $fileHnd, $rot );
+	 writeArray( $fileHnd, $scl );
+
+	 print ("\n    pos=[ " + $pos[0] + " " 
+              + $pos[1] + " " + $pos[2] + " ]");
+	 print ("\n    rot=[ " + $rot[0] + " " 
+              + $rot[1] + " " + $rot[2] + " ]");
+	 print ("\n    scl=[ " + $scl[0] + " " 
+              + $scl[1] + " " + $scl[2] + " ]");
+       }
+    }
+
+currentTime -update false $cTime;
+
+fclose $fileHnd;
+}

@@ -1,0 +1,19 @@
+//
+// Copyright (c) 2002 Morgan Kaufmann. All rights reserved.
+//
+// Companion file from "Complete Maya Programming" Book.
+// Please visit www.davidgould.com for further information.
+//
+
+proc listAll()
+{
+print( "\nNodes..." );
+string $nodes[] = `ls`;
+for( $node in $nodes )
+  {
+  string $nodeType = `objectType $node`;
+  print ("\nNode: " + $node + " (" + $nodeType + ")");
+  }
+}
+
+listAll();

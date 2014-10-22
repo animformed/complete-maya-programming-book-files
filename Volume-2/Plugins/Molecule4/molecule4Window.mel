@@ -1,0 +1,68 @@
+//
+// Copyright (C) 2004 David Gould 
+// 
+
+global proc molecule4Window()
+{
+	string $layout = getOptionBox();
+	setParent $layout;
+	setUITemplate -pushTemplate DefaultTemplate;
+	waitCursor -state 1;
+
+	// Retrieve the option variables
+	float $rad = `optionVar -q "molecule4Radius"`;
+	int $segs = `optionVar -q "molecule4Segments"`;
+	float $br = `optionVar -q "molecule4BallRatio"`;
+	
+	// Create the controls for the options
+	string $parent = `columnLayout -adjustableColumn 1`;
+	floatSliderGrp -label "Radius" -value $rad -min 0.00001 -max 100 -fieldMinValue 0.00001 -fieldMaxValue 10000000 molecule4Radius;
+	intSliderGrp -label "Segments" -value $segs -min 1 -max 60 -fieldMinValue 1 -fieldMaxValue 10000 molecule4Segments;
+	floatSliderGrp -label "Ball-Rod Ratio" -value $br -min 0.00001 -max 10 -fieldMinValue 0.00001 -fieldMaxValue 10000000 molecule4BallRatio;
+
+	waitCursor -state 0;
+	setUITemplate -popTemplate;
+
+	string $applyBtn = getOptionBoxApplyBtn();
+	button -edit -label "Create"
+		   -command ("molecule4SaveOptions( \"" + $parent + "\" ); molecule4Execute();")
+		   $applyBtn;
+	string $saveBtn = getOptionBoxSaveBtn();
+	button -edit 
+		   -command ("molecule4SaveOptions( \"" + $parent + "\");")
+		   $saveBtn;
+	string $resetBtn = getOptionBoxResetBtn();
+	button -edit 
+		   -command "molecule4SetupOptions(1); molecule4UpdateWindow();"
+		   $resetBtn;
+			 
+	setOptionBoxTitle( "Molecule3 Options" );
+
+	showOptionBox();
+}
+
+global proc molecule4SaveOptions( string $parent )
+{		
+	// Get values of controls
+	setParent $parent;
+	float $rad = `floatSliderGrp -query -value molecule4Radius`;
+	int $segs = `intSliderGrp -query -value molecule4Segments`;
+	float $br = `floatSliderGrp -query -value molecule4BallRatio`;
+	
+	// Update option variables
+	optionVar -floatValue molecule4Radius $rad;
+	optionVar -intValue molecule4Segments $segs;
+	optionVar -floatValue molecule4BallRatio $br;
+}
+
+global proc molecule4UpdateWindow()
+{
+	// Retrieve the option variables
+	float $rad = `optionVar -q "molecule4Radius"`;
+	int $segs = `optionVar -q "molecule4Segments"`;
+	float $br = `optionVar -q "molecule4BallRatio"`;
+
+	floatSliderGrp -edit -value $rad "molecule4Radius";
+	intSliderGrp -edit -value $segs "molecule4Segments";
+	floatSliderGrp -edit -value $br "molecule4BallRatio";
+}
